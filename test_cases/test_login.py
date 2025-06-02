@@ -13,6 +13,8 @@ class Test_01_Login:
     password = "secret_sauce"
     invalid_username = "asdfdf"
     invalid_password = "1112"
+    empty_username = ""
+    empty_password =""
 
     def test_title_verification(self):
         self.driver = webdriver.Chrome()
@@ -46,7 +48,7 @@ class Test_01_Login:
         self.driver = webdriver.Chrome()
         self.driver.get(self.login_page_url)
         self.login_page = Login_Page(self.driver)
-        self.login_page.enter_username(self.invalid_username)
+        self.login_page.enter_username(self.empty_username)
         self.login_page.enter_password(self.password)
         self.login_page.click_login_button()
         err_message = self.driver.find_element(By.XPATH,"//div[@class='error-message-container error']//h3//button").text
@@ -61,8 +63,23 @@ class Test_01_Login:
         self.driver = webdriver.Chrome()
         self.driver.get(self.login_page_url)
         self.login_page = Login_Page(self.driver)
-        self.login_page.enter_username(self.invalid_username)
-        self.login_page.enter_password(self.password)
+        self.login_page.enter_username(self.username)
+        self.login_page.enter_password(self.empty_password)
+        self.login_page.click_login_button()
+        err_message = self.driver.find_element(By.XPATH,"//div[@class='error-message-container error']//h3//button").text
+        if err_message == "Epic sadface: Username and password do not match any user in this service":
+            assert True
+            self.driver.close()
+        else:
+            self.driver.close()
+            assert False
+
+    def test_empty_login(self):
+        self.driver = webdriver.Chrome()
+        self.driver.get(self.login_page_url)
+        self.login_page = Login_Page(self.driver)
+        self.login_page.enter_username(self.empty_username)
+        self.login_page.enter_password(self.empty_password)
         self.login_page.click_login_button()
         err_message = self.driver.find_element(By.XPATH,"//div[@class='error-message-container error']//h3//button").text
         if err_message == "Epic sadface: Username and password do not match any user in this service":
