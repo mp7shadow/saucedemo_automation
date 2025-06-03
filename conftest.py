@@ -1,6 +1,5 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 
 # // This fixture sets up a Selenium WebDriver instance for testing
 # def driver():
