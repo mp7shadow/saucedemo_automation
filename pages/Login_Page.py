@@ -1,12 +1,13 @@
 from selenium.webdriver.common.by import By
+from locators.locators import LoginLocators
 
 
 class Login_Page:
 
     # locators
-    textbox_username_id = "user-name"
-    textbox_password_id = "password"
-    btn_login_id = "login-button"
+    textbox_username_id = LoginLocators.username_input[1]
+    textbox_password_id = LoginLocators.password_input[1]   
+    btn_login_id = LoginLocators.login_btn[1]
 
     # constructor
     def __init__(self,driver):
