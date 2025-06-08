@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from configurations.config import Config	
 from pages.Inventory_Page import Inventory_Page
+from pages.Login_Page import Login_Page
 
 class Test_02_Inventory:
 
@@ -23,9 +24,8 @@ class Test_02_Inventory:
             EC.presence_of_element_located((By.ID, "login-button"))
         )   
         # Enter username and password, then submit
-        self.driver.find_element(By.ID, "user-name").send_keys(Config.username)
-        self.driver.find_element(By.ID, "password").send_keys(Config.password)
-        self.driver.find_element(By.ID, "login-button").click()
+        self.login_page = Login_Page(self.driver)
+        self.login_page.login()
         # Wait until the inventory container is present to verify the page is loaded
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, "inventory_container"))
