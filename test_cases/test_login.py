@@ -18,7 +18,15 @@ class Test_01_Login:
     username = Config.valid_username
     password = Config.valid_password
 
-    # Invalid credentials for testing error scenarios
+    # # Error messages for the login page
+    # error_message = "Epic sadface: Username and password do not match any user in this service"
+    # error_message_empty_username = "Epic sadface: Username is required"
+    # error_message_empty_password = "Epic sadface: Password is required"
+    # error_message_empty_login = "Epic sadface: Username is required"
+    # error_message_invalid_login = "Epic sadface: Username and password do not match any user in this service"
+
+
+    # Invalid credentials for testing login scenarios
     invalid_username = "asdfdf"
     invalid_password = "1112"
     empty_username = ""
