@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 class LoginLocators:
+    # Locators for the login page
     username_input = (By.ID, "user-name")
     password_input = (By.ID, "password")
     login_btn = (By.ID, "login-button")
@@ -17,7 +18,6 @@ class LoginLocators:
     # error_message_invalid_login = "Epic sadface: Username and password do not match any user in this service"
 
 class InventoryLocators:
-
     # Locators for the inventory page
     # These locators are used to find elements on the inventory page
     
