@@ -19,21 +19,22 @@ class Test_02_Inventory:
     # Test case to verify that the inventory page is loaded
     # TS02_TC01
     @pytest.mark.inventory_page_loaded
-    def test_inventory_page_loaded(self):
+    def test_inventory_page_loaded(self, driver):
+        self.driver = driver
         try:
-            self.driver = webdriver.Chrome()
+            # self.driver = webdriver.Chrome()
             # Navigate to the login page
             self.driver.get(self.login_page_url)
             # Wait for the login page to load
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "login-button"))
+                EC.presence_of_element_located((By.ID, Login_Page.login_button_id))
             )   
             # Enter username and password, then submit
             self.login_page = Login_Page(self.driver)
             self.login_page.login()
             # Wait until the inventory container is present to verify the page is loaded
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "inventory_container"))
+                EC.presence_of_element_located((By.ID, Inventory_Page.inventory_container_id))
             )
             inventory_page = Inventory_Page(self.driver)
             assert inventory_page.is_inventory_page_loaded() == True
@@ -48,9 +49,10 @@ class Test_02_Inventory:
     # Test case to verify that the inventory items are displayed
     # TS02_TC02
     @pytest.mark.inventory_items_displayed
-    def test_inventory_items_displayed(self):
+    def test_inventory_items_displayed(self, driver):
+        self.driver = driver
         try:
-            self.driver = webdriver.Chrome()
+            # self.driver = webdriver.Chrome()
             # Navigate to the login page
             inventory_page = Inventory_Page(self.driver)
             # Load the inventory page
