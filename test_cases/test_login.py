@@ -32,7 +32,7 @@ class Test_01_Login:
     empty_username = ""
     empty_password =""
 
-    # Test case to verify the title of the login page
+    # Test case to verify the title of the Web page
     def test_title_verification(self):
         self.driver = webdriver.Chrome()
         self.driver.get(self.login_page_url)
@@ -70,10 +70,11 @@ class Test_01_Login:
         self.login_page.enter_username(self.empty_username)
         self.login_page.enter_password(self.password)
         self.login_page.click_login_button()
-        err_element = EC.presence_of_element_located((By.CSS_SELECTOR, "[data-test='error']"))
-        err_message = EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-test='error']"))
+        err_element = EC.presence_of_element_located((By.XPATH, "//h3[@data-test='error']"))
+        err_message = EC.visibility_of_element_located((By.XPATH, "//h3[@data-test='error']"))
+        # Wait for the error message to be present
         WebDriverWait(self.driver, 10).until(err_element)
-        err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
+        err_message = self.driver.find_element(By.XPATH, "//h3[@data-test='error']").text
         # Check if the error message matches the expected message for empty username    
         if err_message == "Epic sadface: Username is required":
             assert True
@@ -90,7 +91,7 @@ class Test_01_Login:
         self.login_page.enter_username(self.username)
         self.login_page.enter_password(self.empty_password)
         self.login_page.click_login_button()
-        err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
+        err_message = self.driver.find_element(By.XPATH, "//h3[@data-test='error']").text
         if err_message == "Epic sadface: Password is required":
             assert True
             self.driver.close()
@@ -106,7 +107,7 @@ class Test_01_Login:
         self.login_page.enter_username(self.empty_username)
         self.login_page.enter_password(self.empty_password)
         self.login_page.click_login_button()
-        err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
+        err_message = self.driver.find_element(By.XPATH, "//h3[@data-test='error']").text
         if err_message == "Epic sadface: Username is required":
             assert True
             self.driver.close()
@@ -122,7 +123,7 @@ class Test_01_Login:
         self.login_page.enter_username(self.invalid_username)
         self.login_page.enter_password(self.invalid_password)
         self.login_page.click_login_button()
-        err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
+        err_message = self.driver.find_element(By.XPATH, "//h3[@data-test='error']").text
         if err_message == "Epic sadface: Username and password do not match any user in this service":
             assert True
             self.driver.close()
@@ -138,7 +139,7 @@ class Test_01_Login:
         self.login_page.enter_username(self.invalid_username)
         self.login_page.enter_password(self.password)
         self.login_page.click_login_button()
-        err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
+        err_message = self.driver.find_element(By.XPATH, "//h3[@data-test='error']").text
         if err_message == "Epic sadface: Username and password do not match any user in this service":
             assert True
             self.driver.close()
