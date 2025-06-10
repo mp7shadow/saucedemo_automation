@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from configurations.config import Config	
 from pages.Login_Page import Login_Page
 
-
+@pytest.mark.usefixtures("driver")
 class Test_01_Login:
 
     # Class variables for the login page URL and credentials

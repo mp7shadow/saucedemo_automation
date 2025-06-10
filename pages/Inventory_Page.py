@@ -5,7 +5,7 @@ from pages.Login_Page import Login_Page
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+import pytest
 
 
 class Inventory_Page:
@@ -26,10 +26,7 @@ class Inventory_Page:
     def is_inventory_page_loaded(self):
         return self.driver.find_element(By.ID, self.inventory_container_id).is_displayed()
     
-    def load_inventory_page(self):
-        # This method can be used to load the inventory page if needed
-        self.driver = webdriver.Chrome()
-        # Navigate to the login page
+    def load_inventory_page(self) -> None:
         self.driver.get(self.login_page_url)
         # Wait for the login page to load
         WebDriverWait(self.driver, 10).until(
@@ -40,8 +37,9 @@ class Inventory_Page:
         self.login_page.login()
         # Wait until the inventory container is present to verify the page is loaded
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, "inventory_container"))
+            EC.presence_of_element_located((By.ID, self.inventory_container_id))
         )
+
 
     # This method returns a list of inventory items displayed on the page
     # Each item is represented by an element with the class name "inventory_item"

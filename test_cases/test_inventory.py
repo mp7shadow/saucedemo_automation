@@ -18,6 +18,7 @@ class Test_02_Inventory:
 
     # Test case to verify that the inventory page is loaded
     # TS02_TC01
+    @pytest.mark.inventory_page_loaded
     def test_inventory_page_loaded(self):
         try:
             self.driver = webdriver.Chrome()
@@ -45,6 +46,8 @@ class Test_02_Inventory:
 
 
     # Test case to verify that the inventory items are displayed
+    # TS02_TC02
+    @pytest.mark.inventory_items_displayed
     def test_inventory_items_displayed(self):
         try:
             self.driver = webdriver.Chrome()
