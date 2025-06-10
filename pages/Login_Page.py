@@ -10,7 +10,7 @@ class Login_Page:
     # they are used to find the elements on the page
     textbox_username_id = LoginLocators.username_input[1]
     textbox_password_id = LoginLocators.password_input[1]   
-    btn_login_id = LoginLocators.login_btn[1]
+    login_button_id = LoginLocators.login_button[1]
 
     # constructor
     def __init__(self,driver):
@@ -33,7 +33,7 @@ class Login_Page:
 
     # this method is used to click on the login button
     def click_login_button(self):
-        self.driver.find_element(By.ID,self.btn_login_id).click()
+        self.driver.find_element(By.ID,self.login_button_id).click()
 
     # combined action for login
     # this method can be used to login with username and password

@@ -13,7 +13,7 @@ from pages.Login_Page import Login_Page
 class Test_02_Inventory:
 
     # Class variables for the inventory page URL
-    inventory_page_url = Config.base_url
+    login_page_url = Config.base_url
 
 
     # Test case to verify that the inventory page is loaded
@@ -23,7 +23,7 @@ class Test_02_Inventory:
         try:
             self.driver = webdriver.Chrome()
             # Navigate to the login page
-            self.driver.get(self.inventory_page_url)
+            self.driver.get(self.login_page_url)
             # Wait for the login page to load
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "login-button"))

@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from locators.locators import InventoryLocators
+from locators.locators import InventoryLocators, LoginLocators
 from configurations.config import Config
 from pages.Login_Page import Login_Page
 from selenium import webdriver
@@ -12,6 +12,7 @@ class Inventory_Page:
 
     # locators
     inventory_container_id = InventoryLocators.inventory_container[1]
+    login_button_id = LoginLocators.login_button[1]
 
     # Class variables for the login page URL
     login_page_url = Config.base_url
@@ -30,7 +31,7 @@ class Inventory_Page:
         self.driver.get(self.login_page_url)
         # Wait for the login page to load
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, "login-button"))
+            EC.presence_of_element_located((By.ID, self.login_button_id))
         )   
         # Enter username and password, then submit
         self.login_page = Login_Page(self.driver)

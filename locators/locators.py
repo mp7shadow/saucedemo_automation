@@ -4,7 +4,7 @@ class LoginLocators:
     # Locators for the login page
     username_input = (By.ID, "user-name")
     password_input = (By.ID, "password")
-    login_btn = (By.ID, "login-button")
+    login_button = (By.ID, "login-button")
 
     # Error message locator
     # This locator is used to find the error message displayed on the login page
