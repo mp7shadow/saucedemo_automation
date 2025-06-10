@@ -48,14 +48,16 @@ class InventoryItemActionsLocators:
 
 class MenuLocators:
     # Locators for the menu
+    menu_sidebar_container = (By.CLASS_NAME, "bm-menu-wrap")
     menu_button = (By.ID, "react-burger-menu-btn")
-    all_items_link = (By.ID, "inventory_sidebar_link")
+    all_items_link = (By.XPATH, "//nav//a[text()='All Items']")
     about_link = (By.ID, "about_sidebar_link")
     logout_link = (By.ID, "logout_sidebar_link")
     reset_app_state_link = (By.ID, "reset_sidebar_link")
 
 class ShoppingCartLocators:
     # Locators for the shopping cart
+    cart_page_header = (By.XPATH, "//span[text()='Your Cart']")
     shopping_cart_link = (By.CLASS_NAME, "shopping_cart_link")
     cart_item = (By.CLASS_NAME, "cart_item")
     cart_item_name = (By.CLASS_NAME, "inventory_item_name")
