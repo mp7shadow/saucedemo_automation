@@ -13,13 +13,34 @@ class Menu_Page:
         ).click()
 
     def click_all_items(self):
-        self.driver.find_element(MenuLocators.all_items_link).click()
+        element = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(MenuLocators.all_items_link)
+        )
+        self.driver.execute_script("arguments[0].click();", element)  # JS click bypasses overlay issues
+        WebDriverWait(self.driver, 10).until(
+            EC.invisibility_of_element_located(MenuLocators.menu_sidebar_container)
+        )
+
 
     def click_about(self):
-        self.driver.find_element(MenuLocators.about_link).click()
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(MenuLocators.about_link)
+        )
+        element = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(MenuLocators.about_link)
+        )
+        self.driver.execute_script("arguments[0].click();", element)
+
 
     def click_logout(self):
-        self.driver.find_element(MenuLocators.logout_link).click()
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(MenuLocators.logout_link)
+        )
+        element = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(MenuLocators.logout_link)
+        )
+        self.driver.execute_script("arguments[0].click();", element)
+
 
     def click_reset_app_state(self):
-        self.driver.find_element(MenuLocators.reset_app_state_link).click()
+        self.driver.find_element(*MenuLocators.reset_app_state_link).click()
