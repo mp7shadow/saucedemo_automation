@@ -8,6 +8,8 @@ from configurations.config import Config
 from pages.Inventory_Page import Inventory_Page
 from pages.Login_Page import Login_Page
 
+@pytest.mark.usefixtures("driver")
+@pytest.mark.inventory
 class Test_02_Inventory:
 
     # Class variables for the inventory page URL
@@ -34,9 +36,9 @@ class Test_02_Inventory:
             )
             inventory_page = Inventory_Page(self.driver)
             assert inventory_page.is_inventory_page_loaded() == True
-            print(" TC01 - Inventory page is loaded successfully.")
+            print(" TS02_TC01 - Inventory page is loaded successfully.")
         except Exception as e:
-            print(f" TC01 - Inventory page failed to load: {e}")
+            print(f" TS02_TC01 - Inventory page failed to load: {e}")
             assert False
         finally:
             self.driver.close()
@@ -52,11 +54,10 @@ class Test_02_Inventory:
             inventory_page.load_inventory_page()
             # Verify that the inventory items are displayed
             assert len(inventory_page.get_inventory_items()) > 0
-            print(" TC02 - Inventory items are displayed successfully.")
+            print(" TS02_TC02 - Inventory items are displayed successfully.")
         except Exception as e:
-            print(f" TC02 - Inventory items failed to display: {e}")
+            print(f" TS02_TC02 - Inventory items failed to display: {e}")
             assert False
         finally:
             self.driver.close()
 
-    

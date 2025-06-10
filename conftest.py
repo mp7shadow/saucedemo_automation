@@ -1,17 +1,16 @@
 import pytest
 from selenium import webdriver
-
-# // This fixture sets up a Selenium WebDriver instance for testing
-# def driver():
-#     driver = webdriver.Chrome()  # You can change this to any other browser driver
-#     driver.get("http://example.com")  # Replace with the URL you want to test
-#     yield driver
-#     driver.quit()
+from selenium.webdriver.chrome.options import Options
 
 @pytest.fixture(scope="class")
-def browser():
-    driver = webdriver.Chrome()
-    driver.maximize_window()
+def driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_experimental_option("prefs", {
+        "credentials_enable_service": False,
+        "profile.password_manager_enabled": False
+    })
 
+    driver = webdriver.Chrome(options=chrome_options)
     yield driver
     driver.quit()
