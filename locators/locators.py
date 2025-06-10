@@ -8,7 +8,7 @@ class LoginLocators:
 
     # Error message locator
     # This locator is used to find the error message displayed on the login page
-    error_message = (By.XPATH, "//h3[@data-test='error']")
+    login_error_message = (By.XPATH, "//h3[@data-test='error']")
    
     # # Error messages for the login page
     # error_message = "Epic sadface: Username and password do not match any user in this service"
@@ -25,7 +25,7 @@ class InventoryLocators:
     inventory_container = (By.ID, "inventory_container")
 
     # Locators for the header elements
-    header_title = (By.XPATH, "//span[@class='title']")
+    header_title = (By.XPATH, "//span[text()='Products']")
     menu_btn = (By.ID, "react-burger-menu-btn")
     shopping_cart_link = (By.CLASS_NAME, "shopping_cart_link")
 
