@@ -26,7 +26,7 @@ class InventoryLocators:
 
     # Locators for the header elements
     header_title = (By.XPATH, "//span[text()='Products']")
-    menu_btn = (By.ID, "react-burger-menu-btn")
+    menu_button = (By.ID, "react-burger-menu-btn")
     shopping_cart_link = (By.CLASS_NAME, "shopping_cart_link")
 
 class InventoryItemLocators:    

@@ -13,13 +13,13 @@ class Menu_Page:
         ).click()
 
     def click_all_items(self):
-        self.driver.find_element(*MenuLocators.all_items_link).click()
+        self.driver.find_element(MenuLocators.all_items_link).click()
 
     def click_about(self):
-        self.driver.find_element(*MenuLocators.about_link).click()
+        self.driver.find_element(MenuLocators.about_link).click()
 
     def click_logout(self):
-        self.driver.find_element(*MenuLocators.logout_link).click()
+        self.driver.find_element(MenuLocators.logout_link).click()
 
     def click_reset_app_state(self):
-        self.driver.find_element(*MenuLocators.reset_app_state_link).click()
+        self.driver.find_element(MenuLocators.reset_app_state_link).click()
