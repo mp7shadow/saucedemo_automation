@@ -74,7 +74,6 @@ class Test_01_Login:
         err_message = EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-test='error']"))
         WebDriverWait(self.driver, 10).until(err_element)
         err_message = self.driver.find_element(By.CSS_SELECTOR, "[data-test='error']").text
-        print(err_message)
         # Check if the error message matches the expected message for empty username    
         if err_message == "Epic sadface: Username is required":
             assert True

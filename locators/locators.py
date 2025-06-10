@@ -21,5 +21,5 @@ class InventoryLocators:
     # Locators for the inventory page
     # These locators are used to find elements on the inventory page
     
-    INVENTORY_CONTAINER = (By.ID, "inventory_container")
+    inventory_container = (By.ID, "inventory_container")
 
