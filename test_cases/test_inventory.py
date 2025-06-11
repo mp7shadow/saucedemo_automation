@@ -66,3 +66,48 @@ class Test_02_Inventory:
         finally:
             self.driver.close()
 
+    
+    # Test case to verify the functionality of the sort dropdown
+    # TS02_TC03
+    @pytest.mark.inventory_sort
+    def test_sort_by_name_ascending(self, driver):
+        inventory = Inventory_Page(driver)
+        inventory.load_inventory_page()
+        assert inventory.is_inventory_page_loaded()
+
+        inventory.select_sort_option("az")
+        product_names = inventory.get_product_names()
+        assert product_names == sorted(product_names), "Items not sorted by name A to Z"
+
+    # TS02_TC04
+    @pytest.mark.inventory_sort
+    def test_sort_by_name_descending(self, driver):
+        inventory = Inventory_Page(driver)
+        inventory.load_inventory_page()
+        assert inventory.is_inventory_page_loaded()
+
+        inventory.select_sort_option("za")
+        product_names = inventory.get_product_names()
+        assert product_names == sorted(product_names, reverse=True), "Items not sorted by name Z to A"
+
+    # TS02_TC05
+    @pytest.mark.inventory_sort
+    def test_sort_by_price_low_to_high(self, driver):
+        inventory = Inventory_Page(driver)
+        inventory.load_inventory_page()
+        assert inventory.is_inventory_page_loaded()
+
+        inventory.select_sort_option("lohi")
+        product_prices = inventory.get_product_prices()
+        assert product_prices == sorted(product_prices), "Items not sorted by price Low to High"
+
+    # TS02_TC06
+    @pytest.mark.inventory_sort
+    def test_sort_by_price_high_to_low(self, driver):
+        inventory = Inventory_Page(driver)
+        inventory.load_inventory_page()
+        assert inventory.is_inventory_page_loaded()
+
+        inventory.select_sort_option("hilo")
+        product_prices = inventory.get_product_prices()
+        assert product_prices == sorted(product_prices, reverse=True), "Items not sorted by price High to Low"
