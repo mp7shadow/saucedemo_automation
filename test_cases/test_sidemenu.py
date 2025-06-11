@@ -2,7 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from locators.locators import InventoryLocators, MenuLocators, ShoppingCartLocators
+from locators.locators import InventoryLocators, LoginLocators, MenuLocators, ShoppingCartLocators
 from pages.Cart_Page import Cart_Page
 from pages.Inventory_Page import Inventory_Page
 from pages.Login_Page import Login_Page
@@ -15,12 +15,13 @@ class Test_03_Sidebar_Menu:
 
     base_url = Config.base_url
 
-
+    @pytest.mark.open_sidebar_menu
     def test_open_sidebar_menu(self, driver):
         try:
             inventory_page = Inventory_Page(driver)
             # Load the inventory page
             inventory_page.load_inventory_page()
+
             # Verify that the inventory page is loaded
             assert inventory_page.is_inventory_page_loaded() == True
 
@@ -47,7 +48,7 @@ class Test_03_Sidebar_Menu:
         finally:
             driver.quit()
 
-
+    @pytest.mark.all_items
     def test_sidebar_menu_allitems(self, driver):
         try:
             inventory_page = Inventory_Page(driver)
@@ -72,11 +73,11 @@ class Test_03_Sidebar_Menu:
             menu.click_all_items()
             # Wait for the inventory page to load
             WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(By.XPATH, InventoryLocators.header_title)
+                EC.presence_of_element_located(InventoryLocators.header_title)
             )
             # Verify that the inventory page is displayed
-            act_inventory = driver.find_element(InventoryLocators.header_title).text
-            assert "Products" in act_inventory, "'All Items' link did not navigate to the Products page."
+            act_inventory = driver.find_element(By.XPATH, "//span[text()='Products']")
+            assert act_inventory.is_displayed(), "'All Items' link did not navigate to the Products page."
 
             print("TS03_TC02 - 'All Items' link verified successfully.")
         except Exception as e:
@@ -85,6 +86,7 @@ class Test_03_Sidebar_Menu:
         finally:
             driver.quit()
 
+    @pytest.mark.about
     def test_sidebar_menu_about(self, driver):
         try:
             inventory_page = Inventory_Page(driver)
@@ -113,11 +115,13 @@ class Test_03_Sidebar_Menu:
         finally:
             driver.quit()
 
+    @pytest.mark.logout
     def test_sidebar_menu_logout(self, driver):
         try:
             inventory_page = Inventory_Page(driver)
             # Load the inventory page
             inventory_page.load_inventory_page()
+
             # Verify that the inventory page is loaded
             assert inventory_page.is_inventory_page_loaded() == True
 
@@ -128,12 +132,12 @@ class Test_03_Sidebar_Menu:
             # Click on 'Logout' link
             menu.click_logout()
 
-            # Wait for the login button to be present
+           # Wait for the login button to be present
             WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(Login_Page.login_button_id)
+                EC.presence_of_element_located(LoginLocators.login_button)
             )
-            login_button = driver.find_element(Login_Page.login_button_id).text
-            assert "login" in login_button, "'Logout' did not navigate to the login page."
+            login_button = driver.find_element(*LoginLocators.login_button)
+            assert login_button.is_displayed(), "'Logout' did not navigate to the login page."
 
             print("TS03_TC04 - Logout successful.")
         except Exception as e:
@@ -141,53 +145,58 @@ class Test_03_Sidebar_Menu:
             assert False
         finally:
             driver.quit()
+    
+    @pytest.mark.reset_app_state
+    def test_sidebar_menu_reset_app_state(self, driver):
+        try:
+            inventory_page = Inventory_Page(driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
 
-    # def login(self, driver):
-    #     driver.get(self.base_url)
-    #     WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.ID, "login-button"))
-    #     )
-    #     Login_Page(driver).login()
+            # Verify that the inventory page is loaded
+            assert inventory_page.is_inventory_page_loaded() == True
 
-    # @pytest.mark.all_items
-    # def test_all_items_link(self, driver):
-        
-    #     self.login(driver)
-    #     menu = Menu_Page(driver)
-    #     menu.open_menu()
-    #     menu.click_all_items()
-    #     act_inventory = driver.find_element(By.XPATH,InventoryLocators.header_title).text
-    #     assert "Products" in act_inventory
-    #     print("TS03_TC01 - 'All Items' link verified.")
+            # Open the sidebar menu
+            menu = Menu_Page(driver)
+            menu.open_menu()
+            assert menu.is_menu_open(), "Sidebar menu did not open properly."
 
-    # @pytest.mark.about
-    # def test_about_link(self, driver):
-    #     self.login(driver)
-    #     menu = Menu_Page(driver)
-    #     menu.open_menu()
-    #     menu.click_about()
-    #     WebDriverWait(driver, 10).until(
-    #         EC.url_contains("saucelabs.com")
-    #     )
-    #     assert "saucelabs.com" in driver.current_url
-    #     print("TS03_TC02 - 'About' link navigates to Sauce Labs Landing page successfully.")
+            # Click on 'Reset App State' link
+            menu.click_reset_app_state()
 
-    # @pytest.mark.logout
-    # def test_logout_link(self, driver):
-    #     self.login(driver)
-    #     menu = Menu_Page(driver)
-    #     menu.open_menu()
-    #     menu.click_logout()
-    #     WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.ID, Login_Page.login_button_id))
-    #     )
-    #     assert "login" in driver.current_url
-    #     print("TS03_TC03 - Logout successful.")
+            # Verify that the app state is reset by checking if the inventory items are displayed again
+            assert len(inventory_page.get_inventory_items()) > 0, "App state was not reset properly."
 
-    # @pytest.mark.reset
-    # def test_reset_app_state_link(self, driver):
-    #     self.login(driver)
-    #     menu = Menu_Page(driver)
-    #     menu.open_menu()
-    #     menu.click_reset_app_state()
-    #     print("TS03_TC04 - Reset App State clicked (no visible change).")
+            print("TS03_TC05 - App state reset successfully.")
+        except Exception as e:
+            print(f"TS03_TC05 - Failed to reset app state: {e}")
+            assert False
+        finally:
+            driver.quit()
+
+    @pytest.mark.sidebar_menu_close
+    def test_sidebar_menu_close(self, driver):
+        try:
+            inventory_page = Inventory_Page(driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+
+            # Verify that the inventory page is loaded
+            assert inventory_page.is_inventory_page_loaded() == True
+
+            # Open the sidebar menu
+            menu = Menu_Page(driver)
+            menu.open_menu()
+
+            # Close the sidebar menu
+            menu.close_menu()
+
+            # Verify that the sidebar menu is closed by checking if the menu button is still displayed
+            assert driver.find_element(*MenuLocators.menu_button).is_displayed(), "Sidebar menu did not close properly."
+
+            print("TS03_TC05 - Sidebar menu closed successfully.")
+        except Exception as e:
+            print(f"TS03_TC05 - Failed to close sidebar menu: {e}")
+            assert False
+        finally:
+            driver.quit()

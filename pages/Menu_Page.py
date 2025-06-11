@@ -43,4 +43,16 @@ class Menu_Page:
 
 
     def click_reset_app_state(self):
-        self.driver.find_element(*MenuLocators.reset_app_state_link).click()
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(MenuLocators.reset_app_state_link)
+        ).click()
+
+    def is_menu_open(self):
+        return WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located(MenuLocators.reset_app_state_link)
+        )
+
+    def close_menu(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(MenuLocators.close_menu_button)
+        ).click()
