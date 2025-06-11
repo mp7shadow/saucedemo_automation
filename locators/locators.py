@@ -54,6 +54,7 @@ class MenuLocators:
     about_link = (By.ID, "about_sidebar_link")
     logout_link = (By.ID, "logout_sidebar_link")
     reset_app_state_link = (By.ID, "reset_sidebar_link")
+    close_menu_button = (By.ID, "react-burger-cross-btn")
 
 class ShoppingCartLocators:
     # Locators for the shopping cart
@@ -99,10 +100,11 @@ class ErrorMessageLocators:
 
 class FooterLocators:
     # Locators for the footer
-    footer = (By.CLASS_NAME, "footer")
+    footer_container = (By.CLASS_NAME, "footer")
     footer_text = (By.XPATH, "//div[@class='footer_copy']")
-    footer_links = (By.CLASS_NAME, "social_link")
-    footer_link_texts = (By.XPATH, "//div[@class='social_link']/text()")
+    footer_twitter_link = (By.XPATH, "//footer//a[text()='Twitter']")
+    footer_facebook_link = (By.XPATH, "//footer//a[text()='Facebook']")
+    footer_linkdin_link = (By.XPATH, "//footer//a[text()='LinkedIn']")
 
 class HeaderLocators:
     # Locators for the header
