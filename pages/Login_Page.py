@@ -43,17 +43,5 @@ class Login_Page:
         self.click_login_button()
 
 
-
-
-# from locators.locators import LoginLocators
-# from pages.Base_Page import BasePage
-# from configurations.config import Config
-
-# class LoginPage(BasePage):
-#     def login(self, username=Config.USERNAME, password=Config.PASSWORD):
-#         self.send_keys(LoginLocators.USERNAME_INPUT, username)
-#         self.send_keys(LoginLocators.PASSWORD_INPUT, password)
-#         self.click(LoginLocators.LOGIN_BUTTON)
-
 #     def get_error_message(self):
 #         return self.get_text(LoginLocators.ERROR_MESSAGE)
