@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
-from locators.locators import InventoryLocators, LoginLocators
+from selenium.webdriver.support.ui import Select
+from locators.locators import InventoryItemLocators, InventoryLocators, InventorySortLocators, LoginLocators
 from configurations.config import Config
 from pages.Login_Page import Login_Page
 from selenium import webdriver
@@ -46,3 +47,38 @@ class Inventory_Page:
     # Each item is represented by an element with the class name "inventory_item"
     def get_inventory_items(self):
         return self.driver.find_elements(By.CLASS_NAME, "inventory_item")
+    
+    # This method returns the number of inventory items displayed on the page
+    def get_inventory_items_count(self):
+        return len(self.get_inventory_items())
+    
+    # This method to select an inventory item by its index
+    def select_inventory_item(self, index):
+        items = self.get_inventory_items()
+        if index < len(items):
+            return items[index]
+        else:
+            raise IndexError("Inventory item index out of range")
+        
+    # This method to select sorting option from the dropdown
+    def select_sorting_option(self, option):
+        sorting_dropdown = self.driver.find_element(By.CLASS_NAME, "product_sort_container")
+        sorting_dropdown.click()
+        options = sorting_dropdown.find_elements(By.TAG_NAME, "option")
+        for opt in options:
+            if opt.text == option:
+                opt.click()
+                break
+        else:
+            raise ValueError(f"Sorting option '{option}' not found")
+        
+    def select_sort_option(self, option_value):
+        dropdown = Select(self.driver.find_element(*InventorySortLocators.sort_dropdown))
+        dropdown.select_by_value(option_value)
+
+    def get_product_names(self):
+        return [elem.text for elem in self.driver.find_elements(*InventoryItemLocators.inventory_item_name)]
+
+    def get_product_prices(self):
+        prices = self.driver.find_elements(*InventoryItemLocators.inventory_item_price)
+        return [float(p.text.replace("$", "")) for p in prices]
