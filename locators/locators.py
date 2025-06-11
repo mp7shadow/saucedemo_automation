@@ -29,6 +29,15 @@ class InventoryLocators:
     menu_button = (By.ID, "react-burger-menu-btn")
     shopping_cart_link = (By.CLASS_NAME, "shopping_cart_link")
 
+# Locators for the inventory sorting dropdown
+class InventorySortLocators:
+    # Locators for the inventory sorting dropdown
+    sort_dropdown = (By.CLASS_NAME, "product_sort_container")
+    sort_option_name_asc = (By.XPATH, "//option[@value='az']")
+    sort_option_name_desc = (By.XPATH, "//option[@value='za']")
+    sort_option_price_low_to_high = (By.XPATH, "//option[@value='lohi']")
+    sort_option_price_high_to_low = (By.XPATH, "//option[@value='hilo']")
+
 class InventoryItemLocators:    
 
     # Locators for inventory items
