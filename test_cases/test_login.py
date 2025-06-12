@@ -9,6 +9,7 @@ from locators.locators import InventoryLocators, LoginLocators
 from pages.Login_Page import Login_Page
 
 @pytest.mark.usefixtures("driver")
+@pytest.mark.login
 class Test_01_Login:
 
     # Class variables for the login page URL and credentials
