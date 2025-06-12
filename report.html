@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">report.html</title>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
+  </head>
+  <body>
+    <h1 id="title">report.html</h1>
+    <p>Report generated on 12-Jun-2025 at 07:42:36 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.1.1</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</th>
+        </tr>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">></div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">34 tests took 00:08:32.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" />
+            <span class="failed">3 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">31 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <span class="rerun">0 Reruns</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  </body>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.5&#34;, &#34;Platform&#34;: &#34;Windows-11-10.0.22631-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.3.5&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;xdist&#34;: &#34;3.7.0&#34;}, &#34;JAVA_HOME&#34;: &#34;C:\\Program Files\\Java\\jdk-19&#34;}, &#34;tests&#34;: {&#34;test_cases/test_cart.py::Test_04_Cart::test_add_item_to_cart_and_verify&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_cart.py::Test_04_Cart::test_add_item_to_cart_and_verify&#34;, &#34;duration&#34;: &#34;00:00:07&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_cart.py::Test_04_Cart::test_add_item_to_cart_and_verify&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:07&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS04_TC01 - Item successfully added to cart and verified.\n&#34;}], &#34;test_cases/test_cart.py::Test_04_Cart::test_continue_shopping_button&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_cart.py::Test_04_Cart::test_continue_shopping_button&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_cart.py::Test_04_Cart::test_continue_shopping_button&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS04_TC02 - Continue Shopping button works as expected.\n&#34;}], &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_display_and_content&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_display_and_content&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_footer.py::Test_05_Footer::test_footer_display_and_content&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nFooter test passed: footer is visible and content is valid.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7294680&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/a140402dad1151c5a3910ead7e4e579e\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C6DC8320&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/a140402dad1151c5a3910ead7e4e579e\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295130&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/a140402dad1151c5a3910ead7e4e579e&#34;}], &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_social_media_links&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_social_media_links&#34;, &#34;duration&#34;: &#34;00:00:23&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_footer.py::Test_05_Footer::test_footer_social_media_links&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:23&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nFooter social media links test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295850&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/827c4fd6011fe26e4b82cba93af2bf15\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72957F0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/827c4fd6011fe26e4b82cba93af2bf15\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295E20&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/827c4fd6011fe26e4b82cba93af2bf15&#34;}], &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_twitter_link&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_twitter_link&#34;, &#34;duration&#34;: &#34;00:00:35&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_footer.py::Test_05_Footer::test_footer_twitter_link&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:35&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nFooter Twitter link test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7296AB0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/498899fcea9b58f2aaf426bb91112228\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7296B70&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/498899fcea9b58f2aaf426bb91112228\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7296FC0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/498899fcea9b58f2aaf426bb91112228&#34;}], &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_facebook_link&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_facebook_link&#34;, &#34;duration&#34;: &#34;00:00:23&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_footer.py::Test_05_Footer::test_footer_facebook_link&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:23&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nFooter Facebook link test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7294EF0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/19103482478898ab768273bd9c3a7310\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295130&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/19103482478898ab768273bd9c3a7310\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72958E0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/19103482478898ab768273bd9c3a7310&#34;}], &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_linkedin_link&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_footer.py::Test_05_Footer::test_footer_linkedin_link&#34;, &#34;duration&#34;: &#34;00:00:23&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_footer.py::Test_05_Footer::test_footer_linkedin_link&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:23&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nFooter LinkedIn link test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7298410&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/5f233ce194bd7a5228464cffdd69e394\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7298470&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/5f233ce194bd7a5228464cffdd69e394\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7298140&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/5f233ce194bd7a5228464cffdd69e394&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_page_loaded&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_page_loaded&#34;, &#34;duration&#34;: &#34;00:00:06&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_page_loaded&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:06&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC01 - Inventory page is loaded successfully.\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_items_displayed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_items_displayed&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_inventory_items_displayed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC02 - Inventory items are displayed successfully.\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_ascending&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_ascending&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_ascending&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_descending&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_descending&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_name_descending&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_low_to_high&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_low_to_high&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_low_to_high&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_high_to_low&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_high_to_low&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_sort_by_price_high_to_low&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_add_item_to_cart&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_add_item_to_cart&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_add_item_to_cart&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC07 - Item &amp;#x27;Sauce Labs Backpack&amp;#x27; added to cart successfully.\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_remove_item_from_cart&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_remove_item_from_cart&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_remove_item_from_cart&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC08 - Item &amp;#x27;Sauce Labs Backpack&amp;#x27; removed from cart successfully.\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_view_item_details&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_view_item_details&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_view_item_details&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;test_inventory.Test_02_Inventory object at 0x00000196C71F4B60&amp;gt;\ndriver = &amp;lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&amp;quot;8c9b42bd7a5b9e65d79620ece4f282ea&amp;quot;)&amp;gt;\n\n    @pytest.mark.inventory_view_item_details\n    def test_view_item_details(self, driver):\n        self.driver = driver\n        try:\n            # self.driver = webdriver.Chrome()\n            # Navigate to the login page\n            inventory_page = Inventory_Page(self.driver)\n            # Load the inventory page\n            inventory_page.load_inventory_page()\n            # View details of an item\n            item_name = &amp;quot;Sauce Labs Backpack&amp;quot;\n&amp;gt;           inventory_page.view_item_details(item_name)\nE           AttributeError: &amp;#x27;Inventory_Page&amp;#x27; object has no attribute &amp;#x27;view_item_details&amp;#x27;\n\ntest_cases\\test_inventory.py:176: AttributeError\n\nDuring handling of the above exception, another exception occurred:\n\nself = &amp;lt;test_inventory.Test_02_Inventory object at 0x00000196C71F4B60&amp;gt;\ndriver = &amp;lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&amp;quot;8c9b42bd7a5b9e65d79620ece4f282ea&amp;quot;)&amp;gt;\n\n    @pytest.mark.inventory_view_item_details\n    def test_view_item_details(self, driver):\n        self.driver = driver\n        try:\n            # self.driver = webdriver.Chrome()\n            # Navigate to the login page\n            inventory_page = Inventory_Page(self.driver)\n            # Load the inventory page\n            inventory_page.load_inventory_page()\n            # View details of an item\n            item_name = &amp;quot;Sauce Labs Backpack&amp;quot;\n            inventory_page.view_item_details(item_name)\n            # Verify that the item details are displayed\n            assert inventory_page.is_item_details_displayed(item_name), &amp;quot;Item details not displayed&amp;quot;\n            print(f&amp;quot; TS02_TC09 - Item &amp;#x27;{item_name}&amp;#x27; details viewed successfully.&amp;quot;)\n        except Exception as e:\n            print(f&amp;quot; TS02_TC09 - Failed to view item details: {e}&amp;quot;)\n&amp;gt;           assert False\nE           assert False\n\ntest_cases\\test_inventory.py:182: AssertionError\n\n----------------------------- Captured stdout call -----------------------------\n TS02_TC09 - Failed to view item details: &amp;#x27;Inventory_Page&amp;#x27; object has no attribute &amp;#x27;view_item_details&amp;#x27;\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_shopping_cart_link&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_shopping_cart_link&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_shopping_cart_link&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC10 - Shopping cart link works successfully.\n&#34;}], &#34;test_cases/test_inventory.py::Test_02_Inventory::test_add_multiple_items_to_cart&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory.py::Test_02_Inventory::test_add_multiple_items_to_cart&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory.py::Test_02_Inventory::test_add_multiple_items_to_cart&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n TS02_TC11 - Multiple items added to cart successfully.\n&#34;}], &#34;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_item_details_display&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_item_details_display&#34;, &#34;duration&#34;: &#34;00:00:04&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_item_details_display&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:04&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;driver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F60F0&amp;gt;\n\n    @pytest.mark.inventory_details_page_loaded\n    def test_item_details_display(driver):\n        try:\n            inventory_page = Inventory_Page(driver)\n&amp;gt;           inventory_page.load_inventory_page()\n\ntest_cases\\test_inventory_item_details.py:20: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;pages.Inventory_Page.Inventory_Page object at 0x00000196C71FA9F0&amp;gt;\n\n    def load_inventory_page(self) -&amp;gt; None:\n&amp;gt;       self.driver.get(self.login_page_url)\nE       AttributeError: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;\n\npages\\Inventory_Page.py:32: AttributeError\n\nDuring handling of the above exception, another exception occurred:\n\ndriver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F60F0&amp;gt;\n\n    @pytest.mark.inventory_details_page_loaded\n    def test_item_details_display(driver):\n        try:\n            inventory_page = Inventory_Page(driver)\n            inventory_page.load_inventory_page()\n            assert inventory_page.is_inventory_page_loaded() == True\n            assert inventory_page.get_inventory_items_count() &amp;gt; 0\n            # Click on item name of the Sauce Labs Backpack item to view its details\n            inventory_page.select_inventory_item(0).find_element(By.CLASS_NAME, &amp;quot;inventory_item_name&amp;quot;).click()\n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Wait for the item details page to load\n            WebDriverWait(driver, 10).until(\n                EC.presence_of_element_located((By.CLASS_NAME, &amp;quot;inventory_details_desc&amp;quot;))\n            )\n    \n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Verify that the item details page is loaded and displays the correct item name and price\n            assert detail_page.get_item_name() == &amp;quot;Sauce Labs Backpack&amp;quot;, &amp;quot;Item name does not match expected value.&amp;quot;\n            assert detail_page.get_item_price() == &amp;quot;$29.99&amp;quot;, &amp;quot;Item price does not match expected value.&amp;quot;\n            print(&amp;quot; TS02_TC03 - Item details page loaded successfully with correct item name and price.&amp;quot;)\n    \n    \n        except Exception as e:\n            print(f&amp;quot; TS02_TC03 - Item details page failed to load: {e}&amp;quot;)\n&amp;gt;           assert False\nE           assert False\n\ntest_cases\\test_inventory_item_details.py:42: AssertionError\n\nDuring handling of the above exception, another exception occurred:\n\ndriver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F60F0&amp;gt;\n\n    @pytest.mark.inventory_details_page_loaded\n    def test_item_details_display(driver):\n        try:\n            inventory_page = Inventory_Page(driver)\n            inventory_page.load_inventory_page()\n            assert inventory_page.is_inventory_page_loaded() == True\n            assert inventory_page.get_inventory_items_count() &amp;gt; 0\n            # Click on item name of the Sauce Labs Backpack item to view its details\n            inventory_page.select_inventory_item(0).find_element(By.CLASS_NAME, &amp;quot;inventory_item_name&amp;quot;).click()\n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Wait for the item details page to load\n            WebDriverWait(driver, 10).until(\n                EC.presence_of_element_located((By.CLASS_NAME, &amp;quot;inventory_details_desc&amp;quot;))\n            )\n    \n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Verify that the item details page is loaded and displays the correct item name and price\n            assert detail_page.get_item_name() == &amp;quot;Sauce Labs Backpack&amp;quot;, &amp;quot;Item name does not match expected value.&amp;quot;\n            assert detail_page.get_item_price() == &amp;quot;$29.99&amp;quot;, &amp;quot;Item price does not match expected value.&amp;quot;\n            print(&amp;quot; TS02_TC03 - Item details page loaded successfully with correct item name and price.&amp;quot;)\n    \n    \n        except Exception as e:\n            print(f&amp;quot; TS02_TC03 - Item details page failed to load: {e}&amp;quot;)\n            assert False\n        finally:\n&amp;gt;           driver.quit()\nE           AttributeError: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;quit&amp;#x27;\n\ntest_cases\\test_inventory_item_details.py:44: AttributeError\n\n----------------------------- Captured stdout call -----------------------------\n TS02_TC03 - Item details page failed to load: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;\n&#34;}], &#34;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_add_and_remove_from_details_page&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_add_and_remove_from_details_page&#34;, &#34;duration&#34;: &#34;00:00:04&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_inventory_item_details.py::Test_02_InventoryItemDetails::test_add_and_remove_from_details_page&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:04&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;driver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F62A0&amp;gt;\n\n    @pytest.mark.inventory_details\n    def test_add_and_remove_from_details_page(driver):\n        try:\n            # Load the inventory page\n            inventory_page = Inventory_Page(driver)\n&amp;gt;           inventory_page.load_inventory_page()\n\ntest_cases\\test_inventory_item_details.py:51: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;pages.Inventory_Page.Inventory_Page object at 0x00000196C72A1760&amp;gt;\n\n    def load_inventory_page(self) -&amp;gt; None:\n&amp;gt;       self.driver.get(self.login_page_url)\nE       AttributeError: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;\n\npages\\Inventory_Page.py:32: AttributeError\n\nDuring handling of the above exception, another exception occurred:\n\ndriver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F62A0&amp;gt;\n\n    @pytest.mark.inventory_details\n    def test_add_and_remove_from_details_page(driver):\n        try:\n            # Load the inventory page\n            inventory_page = Inventory_Page(driver)\n            inventory_page.load_inventory_page()\n            assert inventory_page.is_inventory_page_loaded() == True\n            assert inventory_page.get_inventory_items_count() &amp;gt; 0\n            # Click on item name of the Sauce Labs Backpack item to view its details\n            inventory_page.select_inventory_item(0).find_element(By.CLASS_NAME, &amp;quot;inventory_item_name&amp;quot;).click()\n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Wait for the item details page to load\n            WebDriverWait(driver, 10).until(\n                EC.presence_of_element_located((By.CLASS_NAME, &amp;quot;inventory_details_desc&amp;quot;))\n            )\n    \n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n    \n            # Add the item to the cart\n            detail_page.add_to_cart()\n            assert inventory_page.get_cart_badge_count() == 1, &amp;quot;Cart badge count did not update after adding item from details page.&amp;quot;\n            # Remove the item from the cart\n    \n            detail_page.remove_from_cart()\n            assert inventory_page.get_cart_badge_count() == 0, &amp;quot;Cart badge count did not update after removing item from details page.&amp;quot;\n        except Exception as e:\n            print(f&amp;quot; TS02_TC04 - Add/Remove from details page failed: {e}&amp;quot;)\n&amp;gt;           assert False\nE           assert False\n\ntest_cases\\test_inventory_item_details.py:75: AssertionError\n\nDuring handling of the above exception, another exception occurred:\n\ndriver = &amp;lt;test_inventory_item_details.Test_02_InventoryItemDetails object at 0x00000196C71F62A0&amp;gt;\n\n    @pytest.mark.inventory_details\n    def test_add_and_remove_from_details_page(driver):\n        try:\n            # Load the inventory page\n            inventory_page = Inventory_Page(driver)\n            inventory_page.load_inventory_page()\n            assert inventory_page.is_inventory_page_loaded() == True\n            assert inventory_page.get_inventory_items_count() &amp;gt; 0\n            # Click on item name of the Sauce Labs Backpack item to view its details\n            inventory_page.select_inventory_item(0).find_element(By.CLASS_NAME, &amp;quot;inventory_item_name&amp;quot;).click()\n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n            # Wait for the item details page to load\n            WebDriverWait(driver, 10).until(\n                EC.presence_of_element_located((By.CLASS_NAME, &amp;quot;inventory_details_desc&amp;quot;))\n            )\n    \n            detail_page = InventoryItemDetails_Page(driver)\n            detail_page.load_item_detail_page(&amp;quot;Sauce Labs Backpack&amp;quot;)\n    \n            # Add the item to the cart\n            detail_page.add_to_cart()\n            assert inventory_page.get_cart_badge_count() == 1, &amp;quot;Cart badge count did not update after adding item from details page.&amp;quot;\n            # Remove the item from the cart\n    \n            detail_page.remove_from_cart()\n            assert inventory_page.get_cart_badge_count() == 0, &amp;quot;Cart badge count did not update after removing item from details page.&amp;quot;\n        except Exception as e:\n            print(f&amp;quot; TS02_TC04 - Add/Remove from details page failed: {e}&amp;quot;)\n            assert False\n        finally:\n&amp;gt;           driver.quit()\nE           AttributeError: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;quit&amp;#x27;\n\ntest_cases\\test_inventory_item_details.py:77: AttributeError\n\n----------------------------- Captured stdout call -----------------------------\n TS02_TC04 - Add/Remove from details page failed: &amp;#x27;Test_02_InventoryItemDetails&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;\n&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_title_verification&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_title_verification&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_title_verification&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC01 - Title verification passed: Swag Labs\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A2BD0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/785c6345edf577d3c058dfd335cf5dcc\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A2D80&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/785c6345edf577d3c058dfd335cf5dcc\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A2EA0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/785c6345edf577d3c058dfd335cf5dcc&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_valid_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_valid_login&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_valid_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC01 - Valid login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A36B0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/dbae5a5db78c246322d26600a098b3e5\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A3F80&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/dbae5a5db78c246322d26600a098b3e5\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C71044A0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/dbae5a5db78c246322d26600a098b3e5&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_empty_username_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_empty_username_login&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_empty_username_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC02 - Empty username login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A2210&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/db0d5c124f8277cbff69278333e3579a\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A3020&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/db0d5c124f8277cbff69278333e3579a\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A28A0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/db0d5c124f8277cbff69278333e3579a&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_empty_password_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_empty_password_login&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_empty_password_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC03 - Empty password login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C33E0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b3a5a55bb956cbac217440c12cef182c\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C37A0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b3a5a55bb956cbac217440c12cef182c\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3470&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b3a5a55bb956cbac217440c12cef182c&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_empty_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_empty_login&#34;, &#34;duration&#34;: &#34;00:00:23&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_empty_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:23&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC04 - Empty login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3AD0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b1eb57618189de4556af8b8407a410f7\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C39E0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b1eb57618189de4556af8b8407a410f7\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3620&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b1eb57618189de4556af8b8407a410f7&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_invalid_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_invalid_login&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_invalid_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC05 - Invalid login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A0410&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/de53992020574f9f685e164be011416c\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72FC110&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/de53992020574f9f685e164be011416c\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72FC140&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/de53992020574f9f685e164be011416c&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_invalid_username_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_invalid_username_login&#34;, &#34;duration&#34;: &#34;00:00:22&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_invalid_username_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:22&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC06 - Invalid username login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72FC800&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/932c725886fb3bc1cdf7ecb65c9a4a2e\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72FEAE0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/932c725886fb3bc1cdf7ecb65c9a4a2e\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3B00&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/932c725886fb3bc1cdf7ecb65c9a4a2e&#34;}], &#34;test_cases/test_login.py::Test_01_Login::test_invalid_password_login&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_login.py::Test_01_Login::test_invalid_password_login&#34;, &#34;duration&#34;: &#34;00:00:21&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_login.py::Test_01_Login::test_invalid_password_login&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:21&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS01_TC07 - Invalid password login test passed.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A08C0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/335214605778d596d84938c8177f8e15\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A1250&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/335214605778d596d84938c8177f8e15\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A02C0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/335214605778d596d84938c8177f8e15&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_open_sidebar_menu&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_open_sidebar_menu&#34;, &#34;duration&#34;: &#34;00:00:22&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_open_sidebar_menu&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:22&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC01 - Sidebar menu opened successfully.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A04A0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/9ea2f93b97d1ad2f8f6122353c657b30\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C729B290&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/9ea2f93b97d1ad2f8f6122353c657b30\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7298950&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/9ea2f93b97d1ad2f8f6122353c657b30&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_allitems&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_allitems&#34;, &#34;duration&#34;: &#34;00:00:22&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_allitems&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:22&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC02 - &amp;#x27;All Items&amp;#x27; link verified successfully.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A0AD0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/0738194bc2cd556a52783a0b0347a79d\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A0B60&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/0738194bc2cd556a52783a0b0347a79d\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A1E80&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/0738194bc2cd556a52783a0b0347a79d&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_about&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_about&#34;, &#34;duration&#34;: &#34;00:00:27&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_about&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:27&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC03 - &amp;#x27;About&amp;#x27; link navigates to Sauce Labs Landing page successfully.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72980B0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/487d906d652e657d842a47c1e50751a4\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72998B0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/487d906d652e657d842a47c1e50751a4\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7298950&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/487d906d652e657d842a47c1e50751a4&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_logout&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_logout&#34;, &#34;duration&#34;: &#34;00:00:23&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_logout&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:23&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC04 - Logout successful.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C729B980&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d09028942e199ebac262bda2bcf44532\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295040&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d09028942e199ebac262bda2bcf44532\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3920&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d09028942e199ebac262bda2bcf44532&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_reset_app_state&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_reset_app_state&#34;, &#34;duration&#34;: &#34;00:00:22&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_reset_app_state&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:22&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC05 - App state reset successfully.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C70C3410&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b691d4acdaf4ee8a947254de68b7bebe\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A0230&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b691d4acdaf4ee8a947254de68b7bebe\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C72A2DE0&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/b691d4acdaf4ee8a947254de68b7bebe&#34;}], &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_close&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_close&#34;, &#34;duration&#34;: &#34;00:00:22&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_cases/test_sidemenu.py::Test_03_Sidebar_Menu::test_sidebar_menu_close&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:22&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\nTS03_TC05 - Sidebar menu closed successfully.\n---------------------------- Captured log teardown -----------------------------\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295550&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d751bd0843e9005033d83fb27f30f336\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7295940&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d751bd0843e9005033d83fb27f30f336\nWARNING  urllib3.connectionpool:connectionpool.py:868 Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &amp;#x27;NewConnectionError(&amp;#x27;&amp;lt;urllib3.connection.HTTPConnection object at 0x00000196C7297A10&amp;gt;: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it&amp;#x27;)&amp;#x27;: /session/d751bd0843e9005033d83fb27f30f336&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+</html>
