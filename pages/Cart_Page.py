@@ -32,3 +32,14 @@ class Cart_Page:
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(ShoppingCartLocators.continue_shopping_button)
         ).click()
+
+    def is_cart_empty(self):
+        try:
+            empty_cart_message = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(ShoppingCartLocators.empty_cart_message)
+            )
+            return empty_cart_message.is_displayed()
+        except:
+            return False
+    
+    

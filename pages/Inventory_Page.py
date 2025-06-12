@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-from locators.locators import InventoryItemLocators, InventoryLocators, InventorySortLocators, LoginLocators
+from locators.locators import InventoryItemActionsLocators, InventoryItemLocators, InventoryLocators, InventorySortLocators, LoginLocators
 from configurations.config import Config
 from pages.Login_Page import Login_Page
 from selenium import webdriver
@@ -82,3 +82,42 @@ class Inventory_Page:
     def get_product_prices(self):
         prices = self.driver.find_elements(*InventoryItemLocators.inventory_item_price)
         return [float(p.text.replace("$", "")) for p in prices]
+
+    def get_all_inventory_items(self):
+        return self.driver.find_elements(*InventoryItemLocators.inventory_item)
+
+    def add_item_to_cart_by_name(self, item_name):
+        items = self.driver.find_elements(*InventoryItemLocators.inventory_item)
+        for item in items:
+            name = item.find_element(*InventoryItemLocators.inventory_item_name).text
+            if name == item_name:
+                item.find_element(*InventoryItemActionsLocators.add_to_cart_btn).click()
+                break
+
+    def remove_item_from_cart_by_name(self, item_name):
+        items = self.driver.find_elements(*InventoryItemLocators.inventory_item)
+        for item in items:
+            name = item.find_element(*InventoryItemLocators.inventory_item_name).text
+            if name == item_name:
+                item.find_element(*InventoryItemActionsLocators.remove_from_cart_btn).click()
+                break
+
+    def get_cart_badge_count(self):
+        try:
+            return int(self.driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text)
+        except:
+            return 0
+        
+    def click_on_cart_icon(self):
+        cart_icon = self.driver.find_element(*InventoryLocators.shopping_cart_link)
+        cart_icon.click()
+        # Wait for the cart page to load
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "cart_list"))
+        )
+
+    def is_shopping_cart_page_loaded(self):
+        try:
+            return self.driver.find_element(By.CLASS_NAME, "cart_list").is_displayed()
+        except:
+            return False
