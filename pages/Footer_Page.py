@@ -3,6 +3,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from locators.locators import FooterLocators
 
 class Footer_Page:
+
+    footer_twitter_link = (FooterLocators.footer_twitter_link)
+    footer_facebook_link = (FooterLocators.footer_facebook_link)
+    footer_linkdin_link = (FooterLocators.footer_linkdin_link)
+    footer_container = (FooterLocators.footer_container)
+
     def __init__(self, driver):
         self.driver = driver
 
@@ -22,3 +28,4 @@ class Footer_Page:
 
     def is_linkedin_link_present(self):
         return self.driver.find_element(*FooterLocators.footer_linkdin_link).is_displayed()
+    
