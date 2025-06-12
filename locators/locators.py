@@ -54,6 +54,16 @@ class InventoryItemActionsLocators:
     remove_from_cart_btn = (By.CLASS_NAME, "btn_secondary")
     inventory_item_link = (By.CLASS_NAME, "inventory_item_link")
 
+class InventoryItemDetailsLocators:
+    # Locators for inventory item details page
+    item_details_header = (By.XPATH, "//span[@class='title']")
+    item_details_name = (By.CLASS_NAME, "inventory_details_name")
+    item_details_price = (By.CLASS_NAME, "inventory_details_price")
+    item_details_desc = (By.CLASS_NAME, "inventory_details_desc")
+    item_details_image = (By.CLASS_NAME, "inventory_details_img")
+    add_to_cart_button = (By.ID, "add-to-cart-sauce-labs-backpack")
+    remove_from_cart_button = (By.ID, "remove-sauce-labs-backpack")
+
 
 class MenuLocators:
     # Locators for the menu
