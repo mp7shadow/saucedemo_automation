@@ -31,3 +31,9 @@ class InventoryItemDetails_Page:
 
     def remove_from_cart(self):
         self.driver.find_element(*InventoryItemDetailsLocators.remove_from_cart_button).click()
+    
+    def get_cart_badge_count(self):
+            try:
+                return int(self.driver.find_element(By.CLASS_NAME, "shopping_cart_badge").text)
+            except:
+                return 0
