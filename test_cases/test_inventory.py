@@ -111,3 +111,120 @@ class Test_02_Inventory:
         inventory.select_sort_option("hilo")
         product_prices = inventory.get_product_prices()
         assert product_prices == sorted(product_prices, reverse=True), "Items not sorted by price High to Low"
+
+    # Test case to verify the functionality of adding items to the cart
+    # TS02_TC07
+    @pytest.mark.inventory_add_to_cart
+    def test_add_item_to_cart(self, driver):
+        self.driver = driver
+        try:
+            # self.driver = webdriver.Chrome()
+            # Navigate to the login page
+            inventory_page = Inventory_Page(self.driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+            # Add an item to the cart
+            item_name = "Sauce Labs Backpack"
+            inventory_page.add_item_to_cart_by_name(item_name)
+            # Verify that the item is added to the cart
+            assert inventory_page.get_cart_badge_count() > 0, "Item not added to cart"
+            print(f" TS02_TC07 - Item '{item_name}' added to cart successfully.")
+        except Exception as e:
+            print(f" TS02_TC07 - Failed to add item to cart: {e}")
+            assert False
+        finally:
+            self.driver.close()
+
+    # Test case to verify the functionality of removing items from the cart
+    # TS02_TC08
+    @pytest.mark.inventory_remove_from_cart
+    def test_remove_item_from_cart(self, driver):
+        self.driver = driver
+        try:
+            # self.driver = webdriver.Chrome()
+            # Navigate to the login page
+            inventory_page = Inventory_Page(self.driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+            # Add an item to the cart first
+            item_name = "Sauce Labs Backpack"
+            inventory_page.add_item_to_cart_by_name(item_name)
+            # Remove the item from the cart
+            inventory_page.remove_item_from_cart_by_name(item_name)
+            # Verify that the item is removed from the cart
+            assert inventory_page.get_cart_badge_count() == 0, "Item not removed from cart"
+            print(f" TS02_TC08 - Item '{item_name}' removed from cart successfully.")
+        except Exception as e:
+            print(f" TS02_TC08 - Failed to remove item from cart: {e}")
+            assert False
+        finally:
+            self.driver.close()
+
+    # Test case to verify the functionality of viewing item details
+    # TS02_TC09
+    @pytest.mark.inventory_view_item_details
+    def test_view_item_details(self, driver):
+        self.driver = driver
+        try:
+            # self.driver = webdriver.Chrome()
+            # Navigate to the login page
+            inventory_page = Inventory_Page(self.driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+            # View details of an item
+            item_name = "Sauce Labs Backpack"
+            inventory_page.view_item_details(item_name)
+            # Verify that the item details are displayed
+            assert inventory_page.is_item_details_displayed(item_name), "Item details not displayed"
+            print(f" TS02_TC09 - Item '{item_name}' details viewed successfully.")
+        except Exception as e:
+            print(f" TS02_TC09 - Failed to view item details: {e}")
+            assert False
+        finally:
+            self.driver.close()
+    
+    # Test case to verify the functionality of the shopping cart link
+    # TS02_TC10
+    @pytest.mark.inventory_shopping_cart_link
+    def test_shopping_cart_link(self, driver):
+        self.driver = driver
+        try:
+            # self.driver = webdriver.Chrome()
+            # Navigate to the login page
+            inventory_page = Inventory_Page(self.driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+            # Click on the shopping cart link
+            inventory_page.click_on_cart_icon()
+            # Verify that the shopping cart page is loaded
+            assert inventory_page.is_shopping_cart_page_loaded(), "Shopping cart page not loaded"
+            print(" TS02_TC10 - Shopping cart link works successfully.")
+        except Exception as e:
+            print(f" TS02_TC10 - Failed to navigate to shopping cart: {e}")
+            assert False
+        finally:
+            self.driver.close()
+    
+    # Test case to verify the functionality of adding multiple items to the cart
+    # TS02_TC11
+    @pytest.mark.inventory_add_multiple_items_to_cart
+    def test_add_multiple_items_to_cart(self, driver):
+        self.driver = driver
+        try:
+            # self.driver = webdriver.Chrome()
+            # Navigate to the login page
+            inventory_page = Inventory_Page(self.driver)
+            # Load the inventory page
+            inventory_page.load_inventory_page()
+            # Add multiple items to the cart
+            item_names = ["Sauce Labs Backpack", "Sauce Labs Bike Light"]
+            for item_name in item_names:
+                inventory_page.add_item_to_cart_by_name(item_name)
+            # Verify that the items are added to the cart
+            assert inventory_page.get_cart_badge_count() == len(item_names), "Not all items added to cart"
+            print(" TS02_TC11 - Multiple items added to cart successfully.")
+        except Exception as e:
+            print(f" TS02_TC11 - Failed to add multiple items to cart: {e}")
+            assert False
+        finally:
+            self.driver.close()
