@@ -61,8 +61,8 @@ class InventoryItemDetailsLocators:
     item_details_price = (By.CLASS_NAME, "inventory_details_price")
     item_details_desc = (By.CLASS_NAME, "inventory_details_desc")
     item_details_image = (By.CLASS_NAME, "inventory_details_img")
-    add_to_cart_button = (By.ID, "add-to-cart-sauce-labs-backpack")
-    remove_from_cart_button = (By.ID, "remove-sauce-labs-backpack")
+    add_to_cart_button = (By.CLASS_NAME, "btn_primary")
+    remove_from_cart_button = (By.CLASS_NAME, "btn_secondary")
 
 
 class MenuLocators:
